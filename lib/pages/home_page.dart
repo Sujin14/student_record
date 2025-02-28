@@ -4,6 +4,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:io';
 
 import 'package:student_record_web/model/student_model.dart';
+import 'package:student_record_web/pages/add_student_page.dart';
+import 'package:student_record_web/pages/student_details_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
