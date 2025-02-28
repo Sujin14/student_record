@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
 
 part 'student_model.g.dart';
@@ -14,12 +16,11 @@ class Student extends HiveObject {
   String email;
 
   @HiveField(3)
-  String imagePath;
-
+  Uint8List? imageBytes;
   Student({
     required this.name,
     required this.age,
     required this.email,
-    required this.imagePath,
+    this.imageBytes,
   });
 }

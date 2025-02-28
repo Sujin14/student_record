@@ -1,8 +1,8 @@
-import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart'; // Required for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:student_record_web/model/student_model.dart';
 import 'package:student_record_web/pages/edit_student_page.dart';
-
 
 class StudentDetailPage extends StatelessWidget {
   final Student student;
@@ -15,6 +15,12 @@ class StudentDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ImageProvider? imageProvider;
+
+    if (student.imageBytes != null && student.imageBytes!.isNotEmpty) {
+      imageProvider = MemoryImage(student.imageBytes!);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Details'),
@@ -39,8 +45,8 @@ class StudentDetailPage extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 60,
-                backgroundImage: student.imagePath.isNotEmpty ? FileImage(File(student.imagePath)) : null,
-                child: student.imagePath.isEmpty ? const Icon(Icons.person, size: 60) : null,
+                backgroundImage: imageProvider,
+                child: imageProvider == null ? const Icon(Icons.person, size: 60) : null,
               ),
               const SizedBox(height: 16),
               Text('Name: ${student.name}', style: const TextStyle(fontSize: 20)),

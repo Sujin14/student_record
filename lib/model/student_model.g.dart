@@ -20,7 +20,7 @@ class StudentAdapter extends TypeAdapter<Student> {
       name: fields[0] as String,
       age: fields[1] as int,
       email: fields[2] as String,
-      imagePath: fields[3] as String,
+      imageBytes: fields[3] as Uint8List?,
     );
   }
 
@@ -35,7 +35,7 @@ class StudentAdapter extends TypeAdapter<Student> {
       ..writeByte(2)
       ..write(obj.email)
       ..writeByte(3)
-      ..write(obj.imagePath);
+      ..write(obj.imageBytes);
   }
 
   @override

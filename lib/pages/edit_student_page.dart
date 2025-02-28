@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart'; // Required for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:student_record_web/model/student_model.dart';
@@ -16,38 +17,38 @@ class _EditStudentPageState extends State<EditStudentPage> {
   late TextEditingController _nameController;
   late TextEditingController _ageController;
   late TextEditingController _emailController;
-  String imagePath = '';
+  Uint8List? _imageBytes;
 
   @override
   void initState() {
     super.initState();
-    // Initialize form controllers with the current student details
     _nameController = TextEditingController(text: widget.student.name);
     _ageController = TextEditingController(text: widget.student.age.toString());
     _emailController = TextEditingController(text: widget.student.email);
-    imagePath = widget.student.imagePath;
+    _imageBytes = widget.student.imageBytes; // Load existing image bytes
   }
 
-  /// Opens the device gallery to pick an image and updates the profile picture.
+  /// Pick an image and store it as bytes
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() => imagePath = pickedFile.path); // Update state with new image path
+      final bytes = await pickedFile.readAsBytes(); // Read image as bytes
+      setState(() => _imageBytes = bytes);
     }
   }
 
-  /// Updates the student data in Hive after validating the form.
+  /// Save the updated student details
   void _updateStudent() {
     if (_formKey.currentState!.validate()) {
       widget.student
         ..name = _nameController.text.trim()
         ..age = int.parse(_ageController.text.trim())
         ..email = _emailController.text.trim()
-        ..imagePath = imagePath;
+        ..imageBytes = _imageBytes; // Store image as bytes
 
-      widget.student.save(); // Persist updated data to Hive
-      Navigator.pop(context); // Navigate back to the previous screen
+      widget.student.save();
+      Navigator.pop(context);
     }
   }
 
@@ -69,18 +70,18 @@ class _EditStudentPageState extends State<EditStudentPage> {
           key: _formKey,
           child: ListView(
             children: [
-              // Profile picture selector
+              // Profile Picture Selector
               GestureDetector(
                 onTap: _pickImage,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: imagePath.isNotEmpty ? FileImage(File(imagePath)) : null,
-                  child: imagePath.isEmpty ? const Icon(Icons.add_a_photo, size: 30) : null,
+                  backgroundImage: _imageBytes != null ? MemoryImage(_imageBytes!) : null,
+                  child: _imageBytes == null ? const Icon(Icons.add_a_photo, size: 30) : null,
                 ),
               ),
               const SizedBox(height: 16),
 
-              // Name field with validation (letters and spaces only)
+              // Name Input
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Name'),
@@ -90,7 +91,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
               ),
               const SizedBox(height: 10),
 
-              // Age field with validation (between 10 and 50)
+              // Age Input
               TextFormField(
                 controller: _ageController,
                 decoration: const InputDecoration(labelText: 'Age'),
@@ -101,7 +102,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
               ),
               const SizedBox(height: 10),
 
-              // Email field with standard email validation
+              // Email Input
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -111,7 +112,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
               ),
               const SizedBox(height: 20),
 
-              // Update button to save changes
+              // Update Button
               ElevatedButton(
                 onPressed: _updateStudent,
                 child: const Text('Update'),
