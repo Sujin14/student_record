@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import 'dart:io';
-
 import 'package:student_record_web/model/student_model.dart';
 import 'package:student_record_web/pages/add_student_page.dart';
 import 'package:student_record_web/pages/student_details_page.dart';
@@ -79,12 +76,20 @@ class StudentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  ImageProvider? imageProvider;
+
+if (student.imageBytes != null && student.imageBytes!.isNotEmpty) {
+  imageProvider = MemoryImage(student.imageBytes!); // Works for both Web & Android
+}
+
+
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-          backgroundImage: student.imagePath.isNotEmpty ? FileImage(File(student.imagePath)) : null,
-          child: student.imagePath.isEmpty ? const Icon(Icons.person) : null,
-        ),
+          backgroundImage: student.imageBytes != null ? MemoryImage(student.imageBytes!) : null,
+          child: student.imageBytes == null ? const Icon(Icons.person) : null,
+      ),
+
         title: Text(student.name),
         subtitle: Text('Age: ${student.age}\nEmail: ${student.email}'),
         onTap: () => Navigator.push(
