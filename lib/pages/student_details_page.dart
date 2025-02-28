@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart'; // Required for kIsWeb
+// Required for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:student_record_web/model/student_model.dart';
 import 'package:student_record_web/pages/edit_student_page.dart';
