@@ -48,8 +48,13 @@ class _EditStudentPageState extends State<EditStudentPage> {
         ..imageBytes = _imageBytes; // Store image as bytes
 
       widget.student.save();
-      Navigator.pop(context);
+      Navigator.pop(context, widget.student); // Return updated student to refresh details page
     }
+  }
+
+  /// Cancel and go back without saving
+  void _cancelEdit() {
+    Navigator.pop(context); // Simply pop the screen without saving
   }
 
   @override
@@ -112,10 +117,19 @@ class _EditStudentPageState extends State<EditStudentPage> {
               ),
               const SizedBox(height: 20),
 
-              // Update Button
-              ElevatedButton(
-                onPressed: _updateStudent,
-                child: const Text('Update'),
+              // Button Row (Update & Cancel)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: _updateStudent,
+                    child: const Text('Update'),
+                  ),
+                  OutlinedButton(
+                    onPressed: _cancelEdit,
+                    child: const Text('Cancel'),
+                  ),
+                ],
               ),
             ],
           ),
